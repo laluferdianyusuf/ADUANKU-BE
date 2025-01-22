@@ -258,7 +258,6 @@ class ComplaintService {
       const getUserById = await UserRepository.findUserById({
         id: userId,
       });
-      console.log(getUserById.role);
 
       if (getUserById.role !== "superadmin" && getUserById.role !== "admin") {
         const getComplaint = await ComplaintRepository.getComplaintByIdAndUser({
@@ -276,8 +275,6 @@ class ComplaintService {
             },
           };
         }
-<<<<<<< HEAD
-=======
       }
 
       await VictimRepository.deleteVictim({ complaintId: id });
@@ -325,25 +322,7 @@ class ComplaintService {
           message: "Success get request",
           data: { complaint: getComplaints },
         };
->>>>>>> a3b086d57a3ff54df0d61b22161ebfc7cfb5bceb
       }
-
-      await VictimRepository.deleteVictim({ complaintId: id });
-      await AbuserRepository.deleteAbuser({ complaintId: id });
-
-      const deleteComplaint =
-        getUserById.role === "superadmin" || getUserById.role === "admin"
-          ? await ComplaintRepository.deleteComplaintByAdmin({ id })
-          : await ComplaintRepository.deleteComplaintById({ id, userId });
-
-      return {
-        status: true,
-        status_code: 201,
-        message: "deleted successfully",
-        data: {
-          complaint: deleteComplaint,
-        },
-      };
     } catch (error) {
       return {
         status: false,
