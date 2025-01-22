@@ -3,8 +3,17 @@ const AbuserRepository = require("../repositories/abuserRepository");
 const ComplaintRepository = require("../repositories/complaintRepository");
 const UserRepository = require("../repositories/userRepository");
 const VictimRepository = require("../repositories/victimRepository");
-const nodeMailer = require("nodemailer");
+const nodemailer = require("nodemailer");
 
+const transporter = nodemailer.createTransport({
+  host: "transformasi-perempuan.com",
+  port: 465,
+  secure: true,
+  auth: {
+    user: "aduanku@transformasi-perempuan.com",
+    pass: "BHB4ajug(JI6",
+  },
+});
 class ComplaintService {
   static async createComplaint({
     userId,
@@ -25,6 +34,7 @@ class ComplaintService {
     sexual,
     psychology,
     economy,
+    others,
     chronology,
     abusers,
   }) {
@@ -33,15 +43,7 @@ class ComplaintService {
         role: [ROLES.ADMIN, ROLES.SUPERADMIN],
       });
 
-      const transporter = nodeMailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: "appcom2024@gmail.com",
-          pass: "tybi qjhx mwlu aroq",
-        },
-      });
-
-      if (caseViolence == "fisik" && !physical) {
+      if (caseViolence == "physical" && !physical) {
         return {
           status: false,
           status_code: 400,
@@ -57,7 +59,7 @@ class ComplaintService {
           data: { complaint: null },
         };
       }
-      if (caseViolence == "psikologi" && !psychology) {
+      if (caseViolence == "psychology" && !psychology) {
         return {
           status: false,
           status_code: 400,
@@ -65,7 +67,15 @@ class ComplaintService {
           data: { complaint: null },
         };
       }
-      if (caseViolence == "ekonomi" && !economy) {
+      if (caseViolence == "economy" && !economy) {
+        return {
+          status: false,
+          status_code: 400,
+          message: "is required",
+          data: { complaint: null },
+        };
+      }
+      if (caseViolence == "others" && !others) {
         return {
           status: false,
           status_code: 400,
@@ -92,6 +102,7 @@ class ComplaintService {
         sexual,
         psychology,
         economy,
+        others,
         chronology,
         status: "complaint is waiting",
         isOpened: false,
@@ -105,10 +116,10 @@ class ComplaintService {
           data: { complaint: null },
         };
       } else {
-        const emailAddresses = sendEmail.forEach((user) => user.email);
+        const emailAddresses = sendEmail.map((user) => user.email);
 
-        const mailOption = {
-          from: "appcom2024@gmail.com",
+        const mailOptions = {
+          from: "aduanku@transformasi-perempuan.com",
           to: emailAddresses,
           subject:
             "Laporan Pengaduan dari Mitra : " + createComplaint.complaintName,
@@ -133,7 +144,13 @@ class ComplaintService {
           });
         }
 
-        await transporter.sendMail(mailOption);
+        transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            console.log("Error occurred:", error.message);
+          } else {
+            console.log("Email sent:", info.response);
+          }
+        });
 
         return {
           status: true,
@@ -214,7 +231,7 @@ class ComplaintService {
         const updateComplaint = await ComplaintRepository.updateComplaintStatus(
           {
             id: id,
-            status: "case is done",
+            status: "complaint is done",
           }
         );
         return {
@@ -259,6 +276,8 @@ class ComplaintService {
             },
           };
         }
+<<<<<<< HEAD
+=======
       }
 
       await VictimRepository.deleteVictim({ complaintId: id });
@@ -287,9 +306,57 @@ class ComplaintService {
     }
   }
 
-  static async getAllComplaints() {
+  static async getAllComplaints({ id }) {
     try {
-      const getComplaints = await ComplaintRepository.getComplaints();
+      const getComplaints = await ComplaintRepository.getComplaints({ id: id });
+      if (!getComplaints) {
+        return {
+          status: false,
+          status_code: 404,
+          message: "Complaint not found",
+          data: {
+            complaint: null,
+          },
+        };
+      } else {
+        return {
+          status: true,
+          status_code: 200,
+          message: "Success get request",
+          data: { complaint: getComplaints },
+        };
+>>>>>>> a3b086d57a3ff54df0d61b22161ebfc7cfb5bceb
+      }
+
+      await VictimRepository.deleteVictim({ complaintId: id });
+      await AbuserRepository.deleteAbuser({ complaintId: id });
+
+      const deleteComplaint =
+        getUserById.role === "superadmin" || getUserById.role === "admin"
+          ? await ComplaintRepository.deleteComplaintByAdmin({ id })
+          : await ComplaintRepository.deleteComplaintById({ id, userId });
+
+      return {
+        status: true,
+        status_code: 201,
+        message: "deleted successfully",
+        data: {
+          complaint: deleteComplaint,
+        },
+      };
+    } catch (error) {
+      return {
+        status: false,
+        status_code: 500,
+        message: "error" + error,
+        data: { complaint: null },
+      };
+    }
+  }
+  static async getAllComplaintsByAdmin() {
+    try {
+      const getComplaints = await ComplaintRepository.getComplaintsByAdmin();
+
       if (!getComplaints) {
         return {
           status: false,
@@ -391,11 +458,11 @@ class ComplaintService {
 
       if (userRole === ROLES.ADMIN || userRole === ROLES.SUPERADMIN) {
         result = await ComplaintRepository.getComplaintByStatus({
-          status: "complaint is process",
+          status: "complaint is processing",
         });
       } else {
         result = await ComplaintRepository.getComplaintByStatusAndUser({
-          status: "complaint is process",
+          status: "complaint is processing",
           userId: id,
         });
       }
@@ -480,7 +547,7 @@ class ComplaintService {
 
   static async getComplaintByViolence() {
     try {
-      const getComplaints = await ComplaintRepository.getComplaints();
+      const getComplaints = await ComplaintRepository.getComplaintsByAdmin();
 
       const violenceCount = [
         { type: "physical", count: 0 },

@@ -1,4 +1,4 @@
-const { interests } = require("../models");
+const { interests, complaints } = require("../models");
 
 class InterestRepository {
   static async createInterest({ userId, lesson, complaintId }) {
@@ -11,7 +11,14 @@ class InterestRepository {
   }
 
   static async getAllInterest() {
-    const getInterest = await interests.findAll();
+    const getInterest = await interests.findAll({
+      include: [
+        {
+          model: complaints,
+          attributes: ["id", "complaintName", "companionName"],
+        },
+      ],
+    });
     return getInterest;
   }
 

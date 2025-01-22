@@ -4,22 +4,13 @@ const { JWT, ROLES } = require("../lib/const");
 const jwt = require("jsonwebtoken");
 
 class UserService {
-  static async RegisterUser({ name, username, email, password }) {
+  static async RegisterUser({ username, email, password }) {
     try {
-      if (!name) {
-        return {
-          status: false,
-          status_code: 400,
-          message: "name is required",
-          data: { user: null },
-        };
-      }
-
       if (!username) {
         return {
           status: false,
           status_code: 400,
-          message: "username is required",
+          message: "Username is required",
           data: { user: null },
         };
       }
@@ -27,7 +18,7 @@ class UserService {
         return {
           status: false,
           status_code: 400,
-          message: "email is required",
+          message: "Email is required",
           data: { user: null },
         };
       }
@@ -35,14 +26,14 @@ class UserService {
         return {
           status: false,
           status_code: 400,
-          message: "password is required",
+          message: "Password is required",
           data: { user: null },
         };
       } else if (password.length < 8) {
         return {
           status: false,
           status_code: 400,
-          message: "password must be at least 8 characters",
+          message: "Password must be at least 8 characters",
           data: { user: null },
         };
       }
@@ -58,7 +49,6 @@ class UserService {
       } else {
         const hashedPassword = await bcrypt.hash(password, JWT.SALT_ROUND);
         const registeredUser = await UserRepository.createUser({
-          name,
           username,
           email,
           password: hashedPassword,
@@ -81,22 +71,13 @@ class UserService {
     }
   }
 
-  static async RegisterAdmin({ name, username, email, password }) {
+  static async RegisterAdmin({ username, email, password }) {
     try {
-      if (!name) {
-        return {
-          status: false,
-          status_code: 400,
-          message: "name is required",
-          data: { user: null },
-        };
-      }
-
       if (!username) {
         return {
           status: false,
           status_code: 400,
-          message: "username is required",
+          message: "Username is required",
           data: { user: null },
         };
       }
@@ -104,7 +85,7 @@ class UserService {
         return {
           status: false,
           status_code: 400,
-          message: "email is required",
+          message: "Email is required",
           data: { user: null },
         };
       }
@@ -112,14 +93,14 @@ class UserService {
         return {
           status: false,
           status_code: 400,
-          message: "password is required",
+          message: "Password is required",
           data: { user: null },
         };
       } else if (password.length < 8) {
         return {
           status: false,
           status_code: 400,
-          message: "password must be at least 8 characters",
+          message: "Password must be at least 8 characters",
           data: { user: null },
         };
       }
@@ -135,7 +116,6 @@ class UserService {
       } else {
         const hashedPassword = await bcrypt.hash(password, JWT.SALT_ROUND);
         const registeredAdmin = await UserRepository.createUser({
-          name,
           username,
           email,
           password: hashedPassword,
@@ -172,7 +152,7 @@ class UserService {
         return {
           status: false,
           status_code: 400,
-          message: "password are required",
+          message: "Password are required",
           data: { user: null, token: null },
         };
       }
@@ -182,7 +162,7 @@ class UserService {
       if (!getUser) {
         return {
           status: false,
-          status_code: 202,
+          status_code: 403,
           message: "Invalid Username, try again",
           data: { user: null, token: null },
         };
@@ -192,7 +172,7 @@ class UserService {
       if (!isPasswordValid) {
         return {
           status: false,
-          status_code: 202,
+          status_code: 403,
           message: "Invalid password, try again",
           data: { user: null, token: null },
         };
@@ -246,7 +226,6 @@ class UserService {
         };
       }
 
-      // Update the user
       const [updateResult] = await UserRepository.updateUser({
         id: id,
         name: name,
@@ -258,12 +237,9 @@ class UserService {
         address: address,
       });
 
-      // Check if the update was successful
       if (updateResult === 1) {
-        // Fetch the updated user data
         const updatedUser = await UserRepository.findUserById({ id: id });
 
-        // Generate a new token with updated user data
         const token = await jwt.sign(
           {
             id: updatedUser.id,

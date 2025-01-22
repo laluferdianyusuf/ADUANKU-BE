@@ -19,6 +19,7 @@ class ComplaintRepository {
     sexual,
     psychology,
     economy,
+    others,
     chronology,
     status,
     isOpened,
@@ -41,6 +42,7 @@ class ComplaintRepository {
       sexual,
       psychology,
       economy,
+      others,
       chronology,
       status,
       isOpened,
@@ -70,7 +72,19 @@ class ComplaintRepository {
     return deleteComplaint;
   }
 
-  static async getComplaints() {
+  static async deleteComplaintByAdmin({ id }) {
+    const deleteComplaint = await complaints.destroy({
+      where: { id: id },
+    });
+    return deleteComplaint;
+  }
+
+  static async getComplaints({ id }) {
+    const getComplaints = await complaints.findAll({ where: { userId: id } });
+    return getComplaints;
+  }
+
+  static async getComplaintsByAdmin() {
     const getComplaints = await complaints.findAll();
     return getComplaints;
   }
@@ -78,6 +92,7 @@ class ComplaintRepository {
   static async getComplaintByStatus({ status }) {
     const getComplaint = await complaints.findAll({
       where: { status: status },
+      order: [["createdAt", "DESC"]],
     });
     return getComplaint;
   }
@@ -85,6 +100,7 @@ class ComplaintRepository {
   static async getComplaintByStatusAndUser({ status, userId }) {
     const getComplaint = await complaints.findAll({
       where: { status: status, userId: userId },
+      order: [["createdAt", "DESC"]],
     });
     return getComplaint;
   }

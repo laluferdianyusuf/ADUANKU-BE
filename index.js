@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const app = express();
 const PORT = 2501;
+require("dotenv").config();
 
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -63,22 +64,27 @@ app.delete(
   ComplaintController.deleteComplaint
 );
 app.get(
-  "/api/v2/complaints",
+  "/api/v2/complaints/by/:id",
   middlewares.authenticate,
   ComplaintController.getAllComplaints
 );
 app.get(
-  "/api/v2/complaints/waiting",
+  "/api/v2/complaints/by-admin",
+  // middlewares.authenticate,
+  ComplaintController.getAllComplaintsByAdmin
+);
+app.get(
+  "/api/v2/complaints/waiting/:id",
   middlewares.authenticate,
   ComplaintController.getComplaintIsWaiting
 );
 app.get(
-  "/api/v2/complaints/process",
+  "/api/v2/complaints/process/:id",
   middlewares.authenticate,
   ComplaintController.getComplaintIsProcess
 );
 app.get(
-  "/api/v2/complaints/done",
+  "/api/v2/complaints/done/:id",
   middlewares.authenticate,
   ComplaintController.getComplaintIsDone
 );
@@ -88,7 +94,7 @@ app.get(
   ComplaintController.getComplaintByViolence
 );
 app.get(
-  "/api/v2/complaint/:id",
+  "/api/v2/complaint/by/:id",
   middlewares.authenticate,
   ComplaintController.getComplaintById
 );
@@ -112,11 +118,13 @@ app.post(
   // middlewares.isSuperAdmin,
   NoteController.createNote
 );
+
 app.delete(
   "/api/v4/notes/delete/:id",
   middlewares.authenticate,
   NoteController.deleteNote
 );
+
 app.get(
   "/api/v4/notes/read/:id",
   middlewares.authenticate,
@@ -129,11 +137,13 @@ app.post(
   middlewares.authenticate,
   InterestController.createInterest
 );
+
 app.get(
   "/api/v5/interest/read",
   middlewares.authenticate,
   InterestController.getAllInterest
 );
+
 app.get(
   "/api/v5/interest/read/:id",
   middlewares.authenticate,
@@ -146,12 +156,18 @@ app.post(
   middlewares.authenticate,
   InformationController.createInformation
 );
+
 app.delete(
-  "/api/v5/interest/delete/:id",
+  "/api/v5/information/delete/:id",
   middlewares.authenticate,
   InformationController.deleteInformation
 );
+
 app.get("/api/v5/information/read", InformationController.getAllInformation);
+app.get(
+  "/api/v5/information/get/:id",
+  InformationController.getInformationById
+);
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`listening on http://localhost:${PORT}`);

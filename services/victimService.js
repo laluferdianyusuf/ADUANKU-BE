@@ -4,6 +4,7 @@ class VictimService {
   static async getVictimByCount() {
     try {
       const getVictims = await VictimRepository.getAllVictims();
+
       let genderCount = { male: 0, female: 0 };
       let educationCount = {
         TK: 0,
@@ -25,10 +26,10 @@ class VictimService {
       } else {
         getVictims.map((victim) => {
           switch (victim.gender) {
-            case "male":
+            case "Laki - Laki":
               genderCount.male++;
               break;
-            case "female":
+            case "Perempuan":
               genderCount.female++;
               break;
             default:
@@ -67,6 +68,7 @@ class VictimService {
           message: "victims are available",
           data: {
             victim: {
+              victim: getVictims.length,
               gender: genderCount,
               education: educationCount,
             },
