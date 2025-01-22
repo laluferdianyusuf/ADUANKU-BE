@@ -56,6 +56,13 @@ class ComplaintRepository {
     return getComplaint;
   }
 
+  static async deleteComplaintByAdmin({ id }) {
+    const deleteComplaint = await complaints.destroy({
+      where: { id: id },
+    });
+    return deleteComplaint;
+  }
+
   static async deleteComplaintById({ id, userId }) {
     const deleteComplaint = await complaints.destroy({
       where: { id: id, userId: userId },

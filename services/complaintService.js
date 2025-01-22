@@ -238,38 +238,45 @@ class ComplaintService {
 
   static async deleteComplaintById({ id, userId }) {
     try {
-      const getComplaint = await ComplaintRepository.getComplaintByIdAndUser({
-        id,
-        userId,
+      const getUserById = await UserRepository.findUserById({
+        id: userId,
       });
+      console.log(getUserById.role);
 
-      if (!getComplaint) {
-        return {
-          status: false,
-          status_code: 404,
-          message: `Complaint with id ${id} and user id ${userId} is not found`,
-          data: {
-            complaint: null,
-          },
-        };
-      } else {
-        await VictimRepository.deleteVictim({ complaintId: id });
-        await AbuserRepository.deleteAbuser({ complaintId: id });
-
-        const deleteComplaint = await ComplaintRepository.deleteComplaintById({
-          id: id,
-          userId: userId,
+      if (getUserById.role !== "superadmin" && getUserById.role !== "admin") {
+        const getComplaint = await ComplaintRepository.getComplaintByIdAndUser({
+          id,
+          userId,
         });
 
-        return {
-          status: true,
-          status_code: 201,
-          message: "deleted successfully",
-          data: {
-            complaint: deleteComplaint,
-          },
-        };
+        if (!getComplaint) {
+          return {
+            status: false,
+            status_code: 404,
+            message: `Complaint with id ${id} and user id ${userId} is not found`,
+            data: {
+              complaint: null,
+            },
+          };
+        }
       }
+
+      await VictimRepository.deleteVictim({ complaintId: id });
+      await AbuserRepository.deleteAbuser({ complaintId: id });
+
+      const deleteComplaint =
+        getUserById.role === "superadmin" || getUserById.role === "admin"
+          ? await ComplaintRepository.deleteComplaintByAdmin({ id })
+          : await ComplaintRepository.deleteComplaintById({ id, userId });
+
+      return {
+        status: true,
+        status_code: 201,
+        message: "deleted successfully",
+        data: {
+          complaint: deleteComplaint,
+        },
+      };
     } catch (error) {
       return {
         status: false,
