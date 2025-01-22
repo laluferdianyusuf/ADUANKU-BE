@@ -20,6 +20,7 @@ const createComplaint = async (req, res) => {
     sexual,
     psychology,
     economy,
+    others,
     chronology,
     abusers,
   } = req.body;
@@ -44,6 +45,7 @@ const createComplaint = async (req, res) => {
       sexual,
       psychology,
       economy,
+      others,
       chronology,
       abusers,
     });
@@ -100,8 +102,21 @@ const deleteComplaint = async (req, res, next) => {
 };
 
 const getAllComplaints = async (req, res) => {
+  const { id } = req.params;
   const { status, status_code, message, data } =
-    await ComplaintService.getAllComplaints();
+    await ComplaintService.getAllComplaints({ id: id });
+
+  res.status(status_code).send({
+    status: status,
+    status_code: status_code,
+    message: message,
+    data: data,
+  });
+};
+
+const getAllComplaintsByAdmin = async (req, res) => {
+  const { status, status_code, message, data } =
+    await ComplaintService.getAllComplaintsByAdmin();
 
   res.status(status_code).send({
     status: status,
@@ -112,7 +127,7 @@ const getAllComplaints = async (req, res) => {
 };
 
 const getComplaintIsWaiting = async (req, res) => {
-  const { id } = req.users;
+  const { id } = req.params;
 
   const { status, status_code, message, data } =
     await ComplaintService.getComplaintIsWaiting({ id: id });
@@ -126,7 +141,7 @@ const getComplaintIsWaiting = async (req, res) => {
 };
 
 const getComplaintIsProcess = async (req, res) => {
-  const { id } = req.users;
+  const { id } = req.params;
 
   const { status, status_code, message, data } =
     await ComplaintService.getComplaintIsProcess({ id: id });
@@ -140,7 +155,7 @@ const getComplaintIsProcess = async (req, res) => {
 };
 
 const getComplaintIsDone = async (req, res) => {
-  const { id } = req.users;
+  const { id } = req.params;
 
   const { status, status_code, message, data } =
     await ComplaintService.getComplaintIsDone({ id: id });
@@ -205,4 +220,5 @@ module.exports = {
   getComplaintIsProcess,
   getComplaintIsWaiting,
   updateIsOpened,
+  getAllComplaintsByAdmin,
 };

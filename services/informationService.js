@@ -120,6 +120,41 @@ class InformationService {
       };
     }
   }
+
+  static async getInformationById({ id }) {
+    try {
+      const getInformation = await InformationRepository.getInformationById({
+        id: id,
+      });
+
+      if (!getInformation) {
+        return {
+          status: false,
+          status_code: 404,
+          message: "Information not found",
+          data: {
+            information: null,
+          },
+        };
+      } else {
+        return {
+          status: true,
+          status_code: 200,
+          message: "Information are available",
+          data: {
+            information: getInformation,
+          },
+        };
+      }
+    } catch (error) {
+      return {
+        status: false,
+        status_code: 500,
+        message: "error" + error,
+        data: { information: null },
+      };
+    }
+  }
 }
 
 module.exports = InformationService;

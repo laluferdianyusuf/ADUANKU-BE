@@ -65,6 +65,9 @@ module.exports = {
       economy: {
         type: Sequelize.STRING,
       },
+      others: {
+        type: Sequelize.STRING,
+      },
       chronology: {
         type: Sequelize.STRING,
       },

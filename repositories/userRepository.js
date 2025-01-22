@@ -2,9 +2,8 @@ const { Op } = require("sequelize");
 const { users } = require("../models");
 
 class UserRepository {
-  static async createUser({ name, username, email, password, role }) {
+  static async createUser({ username, email, password, role }) {
     const createUser = await users.create({
-      name,
       username,
       email,
       password,
@@ -24,8 +23,6 @@ class UserRepository {
     phoneNumber,
     address,
   }) {
-    console.log(id);
-
     const updateUser = await users.update(
       {
         name: name,

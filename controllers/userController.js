@@ -1,11 +1,10 @@
 const UserService = require("../services/userService");
 
 const registerUser = async (req, res) => {
-  const { name, username, email, password } = req.body;
+  const { username, email, password } = req.body;
 
   const { status, status_code, message, data } = await UserService.RegisterUser(
     {
-      name,
       username,
       email,
       password,
@@ -20,11 +19,10 @@ const registerUser = async (req, res) => {
 };
 
 const registerAdmin = async (req, res) => {
-  const { name, username, email, password } = req.body;
+  const { username, email, password } = req.body;
 
   const { status, status_code, message, data } =
     await UserService.RegisterAdmin({
-      name,
       username,
       email,
       password,

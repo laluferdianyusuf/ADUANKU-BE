@@ -43,4 +43,22 @@ const getAllInformation = async (req, res) => {
   });
 };
 
-module.exports = { createInformation, deleteInformation, getAllInformation };
+const getInformationById = async (req, res) => {
+  const { id } = req.params;
+  const { status, status_code, message, data } =
+    await InformationService.getInformationById({ id: id });
+
+  res.status(status_code).send({
+    status: status,
+    status_code: status_code,
+    message: message,
+    data: data,
+  });
+};
+
+module.exports = {
+  createInformation,
+  deleteInformation,
+  getAllInformation,
+  getInformationById,
+};

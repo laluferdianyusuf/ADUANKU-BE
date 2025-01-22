@@ -44,6 +44,7 @@ module.exports = (sequelize, DataTypes) => {
       sexual: DataTypes.STRING,
       psychology: DataTypes.STRING,
       economy: DataTypes.STRING,
+      others: DataTypes.STRING,
       chronology: DataTypes.STRING,
       status: DataTypes.STRING,
       isOpened: DataTypes.BOOLEAN,
